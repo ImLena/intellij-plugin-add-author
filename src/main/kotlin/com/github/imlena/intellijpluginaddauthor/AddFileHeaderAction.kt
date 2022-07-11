@@ -17,6 +17,10 @@ import java.nio.charset.Charset
 
 class AddFileHeaderAction : AnAction() {
 
+    /**
+     * This function execute git command to get authors of the code in current file
+     * and add file header with names.
+     */
     override fun actionPerformed(e: AnActionEvent) {
         val editor: Editor? = e.getData(CommonDataKeys.EDITOR)
         val document: Document = editor!!.document
@@ -32,12 +36,18 @@ class AddFileHeaderAction : AnAction() {
 
         val cmd = "git shortlog -s -n $pathFromRepositoryRoot"
 
+        /**
+         * Execute command in command line.
+         */
         val generalCommandLine = GeneralCommandLine(cmd)
         generalCommandLine.charset = Charset.forName("UTF-8")
         generalCommandLine.setWorkDirectory(pathToProject)
 
         val commandLineOutputStr = ScriptRunnerUtil.getProcessOutput(generalCommandLine)
 
+        /**
+         * Add file header.
+         */
         CommandProcessor.getInstance().runUndoTransparentAction {
             ApplicationManager.getApplication().runWriteAction { document.insertString(0,  "/**\n" +
                     " * @author $commandLineOutputStr\n" +
